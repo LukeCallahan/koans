@@ -12,8 +12,25 @@
 #   about_triangle_project.rb
 # and
 #   about_triangle_project_2.rb
+
+
+
+
+
 #
 def triangle(a, b, c)
+
+
+	s = (a + b + c) / 2.0
+
+#The following must be positive to be a valid triangle.
+
+ok = (s-a) * (s-b) * (s-c)
+
+
+if a <= 0 || b <= 0 || c <= 0 || ok <=0 then
+	raise TriangleError
+end
   # WRITE THIS CODE
   if a == b && b == c then
   	:equilateral
