@@ -1,7 +1,7 @@
-require File.expand_path(File.dirname(__FILE__) + '/neo')
+require File.expand_path(File.dirname(__FILE__) + '/edgecase')
 
 # Greed is a dice game where you roll up to five dice to accumulate
-# points.  The following "score" function will be used to calculate the
+# points.  The following "score" function will be used calculate the
 # score of a single roll of the dice.
 #
 # A greed roll is scored as follows:
@@ -30,10 +30,50 @@ require File.expand_path(File.dirname(__FILE__) + '/neo')
 # Your goal is to write the score method.
 
 def score(dice)
-  # You need to write this method
+  result = 0
+  
+  # First idea: loop through all values and add to hash but only 
+  # once per unique value and have a counter for how many times 
+  # value was found
+  
+  # The param for the new() method call acts as a default value if 
+  # an accessed key doesn't exist. Awesome! Saved me from writing a 
+  # bloated each statement with an if/elsif to handle existence!
+  counts = Hash.new(0) 
+  
+  dice.each do |value|
+    counts[value] += 1
+  end
+  
+  counts.each do |item,numFound|
+    # 1,1,1 = 1000 points
+    if item == 1 && numFound >= 3 then
+      result += 1000
+      numFound -= 3
+    end
+    
+    # any number other than 1, found 3 times is that number times 
+    # 100.. so 5,5,5 = 500 points, 3,3,3 = 300 points, etc.
+    if item != 1 && numFound >= 3 then
+      result += item * 100
+      numFound -= 3
+    end
+    
+    # 1 (not part of set) = 100 points for each found
+    if item == 1 && numFound <= 2 then 
+      result += 100 * numFound
+    end
+    
+    # 5 (not part of set) = 50 points for each found
+    if item == 5 && numFound <=2 then
+      result += 50 * numFound
+    end
+  end
+  
+  result
 end
 
-class AboutScoringProject < Neo::Koan
+class AboutScoringProject < EdgeCase::Koan
   def test_score_of_an_empty_list_is_zero
     assert_equal 0, score([])
   end
@@ -69,9 +109,6 @@ class AboutScoringProject < Neo::Koan
   def test_score_of_mixed_is_sum
     assert_equal 250, score([2,5,2,2,3])
     assert_equal 550, score([5,5,5,5])
-    assert_equal 1100, score([1,1,1,1])
-    assert_equal 1200, score([1,1,1,1,1])
-    assert_equal 1150, score([1,1,1,5,1])
   end
 
 end
